@@ -14,7 +14,9 @@
 
 * [Install](#install)
 * [Usage](#usage)
+* [Rate Limiting](#rate-limiting)
 * [Background](#background)
+* [Deploy Yourself](#deploy-yourself)
 * [Contributors](#contributors)
 * [License](#license)
 
@@ -38,31 +40,24 @@ yarn add lipo
 
 > To keep things simple you can use the exact same API that [Sharp][] offers.
 
-1. Go to <https://lipo.io> and get a free API key
-
-2. Integrate `lipo` in two extra lines of code:
-
-   ```js
-   const Lipo = require('lipo');
-   const lipo = new Lipo({ key: 'YOUR_API_KEY_HERE' });
-   lipo('input.jpg')
-     .resize(300, 300)
-     .toFile('output.jpg', err => {
-       if (err) throw err;
-       console.log('resized image');
-     });
-   ```
-
-You can also pass your API key as an environment variable (e.g. `LIPO_KEY=YOUR_API_KEY_HERE node app.js`), and then you can simply call `const lipo = new Lipo();` without having to pass an API key option.
+```js
+const Lipo = require('lipo');
+const lipo = new Lipo();
+lipo('input.jpg')
+ .resize(300, 300)
+ .toFile('output.jpg', err => {
+   if (err) throw err;
+   console.log('resized image');
+ });
+```
 
 > **Lipo** is a drop-in replacement for Sharp (so you won't have to worry about cross-platform installation).
 
-You can simply replace instances of `sharp` with `lipo` after you initialize it with your API key:
+You can simply replace instances of `sharp` with `lipo`:
 
 ```diff
 -const sharp = require('sharp');
 +const Lipo = require('lipo');
-+const lipo = new Lipo('YOUR_API_KEY_HERE');
 -sharp('input.jpg')
 +lipo('input.jpg')
   .resize(300, 200)
@@ -71,6 +66,13 @@ You can simply replace instances of `sharp` with `lipo` after you initialize it 
      console.log('resized image');
   });
 ```
+
+
+## Rate Limiting
+
+Note that if you use make more than 100 requests per hour from the same IP address or wish to exceed 20MB file upload size limitation, we will rate limit you until you sign up for an API key at <https://lipo.io>.
+
+Once you sign up for a key, you can pass it as `const lipo = new Lipo({ key: 'YOUR_API_KEY_HERE' });` or as an environment variable (e.g. `LIPO_KEY=YOUR_API_KEY_HERE node app.js`).
 
 
 ## Background
@@ -84,6 +86,11 @@ I tried pure JavaScript-based solutions like [Jimp][], and even tried PhantomJS 
 Sharp was the fastest option, and therefore I thought making a drop-in replacement that uses a powerful server would be satisfactory.
 
 Thus Lipo was born.
+
+
+## Deploy Yourself
+
+See the test folder for an example that shows how to use the middleware exposed as `Lipo.middleware`.
 
 
 ## Contributors
