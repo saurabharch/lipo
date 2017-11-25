@@ -4,15 +4,13 @@ const _ = require('lodash');
 const Frisbee = require('frisbee');
 const FormData = require('form-data');
 const safeStringify = require('fast-safe-stringify');
-const debug = require('debug')('lipo');
 const boolean = require('boolean');
 const sharp = require('sharp');
 
-const INVALID_FILE = 'File upload was invalid.';
 const INVALID_QUEUE = 'Image transformation queue was invalid.';
 
-function Lipo(options = {}) {
-  this.__options = Object.assign(
+function Lipo(config = {}) {
+  this.__config = Object.assign(
     {
       key: '',
       baseURI:
@@ -20,26 +18,29 @@ function Lipo(options = {}) {
           ? 'http://localhost:3000'
           : 'https://lipo.io'
     },
-    options
+    config
   );
 
-  debug('options %o', this.__options);
-
   this.__api = new Frisbee({
-    baseURI: this.__options.baseURI,
+    baseURI: this.__config.baseURI,
     headers: {
       Accept: 'application/json'
     }
   });
 
-  if (this.__options.key) {
-    debug('using auth key %s', this.__options.key);
-    this.__api.auth(this.__options.key);
-  }
+  if (this.__config.key) this.__api.auth(this.__config.key);
 
   this.__queue = [];
 
+  return input => {
+    this.__input = input;
+    return this;
+  };
+  /*
+  // <https://github.com/lovell/sharp/issues/1045>
   return (input, options = {}) => {
+    this.__input = null;
+    this.__options = {};
     // input = Buffer | String
     // options = Object
     // - density (Number)
@@ -52,12 +53,13 @@ function Lipo(options = {}) {
     //   - height (Number)
     //   - channels (Number; 3-4)
     //   - background (String | Object)
-    debug('set input to %s', input);
-    this.__input = input;
-    debug('set options to %o', options);
-    this.__options = options;
+    if (_.isString(input) || _.isBuffer(input)) this.__input = input;
+    else if (_.isObject(this.__input)) this.__options = input;
+    if (!_.isObject(this.__input) && _.isObject(options))
+      this._options = options;
     return this;
   };
+  */
 }
 
 // Object.keys(require('sharp').prototype).filter(key => !key.startsWith('_'))
@@ -111,7 +113,6 @@ const keys = [
 ];
 
 Lipo.prototype.__toFile = function(fileOut, fn) {
-  debug('fileOut %s', fileOut);
   if (!_.isString(fileOut)) throw new Error('File output path required');
   const promise = new Promise(async (resolve, reject) => {
     try {
@@ -132,15 +133,14 @@ Lipo.prototype.__toFile = function(fileOut, fn) {
 };
 
 Lipo.prototype.__toBuffer = function(fn) {
-  debug('queue', this.__queue);
-  debug('input', this.__input);
   const promise = new Promise(async (resolve, reject) => {
     try {
       const body = new FormData();
       if (_.isString(this.__input))
         body.append('input', fs.createReadStream(this.__input));
       else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-      else throw new Error('Input must be a String or Buffer');
+      else if (_.isObject(this.__input))
+        body.append('options', safeStringify(this.__input));
       body.append('queue', safeStringify(this.__queue));
       this.__queue = [];
       const res = await this.__api.post('/', { body });
@@ -170,7 +170,6 @@ Lipo.prototype.__toBuffer = function(fn) {
 
 keys.forEach(key => {
   Lipo.prototype[key] = function() {
-    debug(`${key} called with arguments`, [].slice.call(arguments));
     if (!['toFile', 'toBuffer'].includes(key)) {
       this.__queue.push([key].concat([].slice.call(arguments)));
       return this;
@@ -182,26 +181,25 @@ keys.forEach(key => {
 
 Lipo.middleware = async function(ctx) {
   try {
-    if (!ctx.req.file)
-      throw Boom.badRequest(
-        _.isFunction(ctx.req.t) ? ctx.req.t(INVALID_FILE) : INVALID_FILE
-      );
     const err = Boom.badRequest(
       _.isFunction(ctx.req.t) ? ctx.req.t(INVALID_QUEUE) : INVALID_QUEUE
     );
     if (!_.isString(ctx.req.body.queue)) throw Boom.badRequest(err);
     const queue = JSON.parse(ctx.req.body.queue);
-    if (!_.isArray(queue) || _.isEmpty(queue)) throw Boom.badRequest(err);
+    if (!_.isArray(queue)) throw Boom.badRequest(err);
+    const options = _.isString(ctx.req.body.options)
+      ? JSON.parse(ctx.req.body.options)
+      : null;
     const transform = _.reduce(
       queue,
       (transform, task) => transform[task.shift()](...task),
-      sharp()
+      _.isObject(options) ? sharp(options) : sharp()
     ).on('info', info => {
       Object.keys(info).forEach(key => {
         ctx.set(`x-sharp-${key}`, info[key]);
       });
     });
-    ctx.body = ctx.req.file.stream.pipe(transform);
+    ctx.body = ctx.req.file ? ctx.req.file.stream.pipe(transform) : transform;
   } catch (err) {
     ctx.throw(err);
   }

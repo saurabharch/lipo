@@ -47,6 +47,27 @@ test('basic', async t => {
   t.is(info.premultiplied, false);
 });
 
+test('basic with options', async t => {
+  const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
+  const info = await t.context
+    .lipo({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255, alpha: 128 }
+      }
+    })
+    .jpeg()
+    .toFile(jpg);
+  t.is(info.format, 'jpeg');
+  t.is(info.size, 807);
+  t.is(info.width, 300);
+  t.is(info.height, 300);
+  t.is(info.channels, 3);
+  t.is(info.premultiplied, false);
+});
+
 test.cb('basic with callback', t => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
   t.context
