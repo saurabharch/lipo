@@ -14,6 +14,7 @@
 
 * [Install](#install)
 * [Usage](#usage)
+* [Background](#background)
 * [Contributors](#contributors)
 * [License](#license)
 
@@ -70,6 +71,19 @@ You can simply replace instances of `sharp` with `lipo` after you initialize it 
 ```
 
 
+## Background
+
+After attempting to work with a team while building [Lad][], I instructed them how to install [Sharp][].
+
+However between Docker, Ubuntu, and Mac cross-platform issues reported by the team, I wanted to drop Sharp completely as a dependency from [Lad][].
+
+I tried pure JavaScript-based solutions like [Jimp][], and even tried PhantomJS and Puppeteer solutions, however they were all too slow.
+
+Sharp was the fastest option, and therefore I thought making a drop-in replacement that uses a powerful server would be satisfactory.
+
+Thus Lipo was born.
+
+
 ## Contributors
 
 | Name           | Website                    |
@@ -95,3 +109,5 @@ You can simply replace instances of `sharp` with `lipo` after you initialize it 
 [gm]: https://aheckmann.github.io/gm/
 
 [im]: https://github.com/yourdeveloper/node-imagemagick
+
+[lad]: https://lad.js.org
