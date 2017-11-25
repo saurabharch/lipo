@@ -12,7 +12,7 @@ const INVALID_QUEUE = 'Image transformation queue was invalid.';
 function Lipo(config = {}) {
   this.__config = Object.assign(
     {
-      key: '',
+      key: process.env.LIPO_KEY || '',
       baseURI:
         process.env.NODE_ENV === 'test'
           ? 'http://localhost:3000'

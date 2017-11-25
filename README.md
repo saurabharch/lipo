@@ -53,6 +53,8 @@ yarn add lipo
      });
    ```
 
+You can also pass your API key as an environment variable (e.g. `LIPO_KEY=YOUR_API_KEY_HERE node app.js`), and then you can simply call `const lipo = new Lipo();` without having to pass an API key option.
+
 > **Lipo** is a drop-in replacement for Sharp (so you won't have to worry about cross-platform installation).
 
 You can simply replace instances of `sharp` with `lipo` after you initialize it with your API key:
