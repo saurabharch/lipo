@@ -7,6 +7,7 @@ const Koa = require('koa');
 const multer = require('koa-multer');
 const bytes = require('bytes');
 const errorHandler = require('koa-better-error-handler');
+const lipoKoa = require('lipo-koa');
 
 const Lipo = require('../');
 
@@ -29,7 +30,8 @@ test.cb.beforeEach(t => {
   app.context.onerror = errorHandler;
   // specify that this is our api
   app.context.api = true;
-  app.use(Lipo.middleware);
+  // use lipo's koa middleware
+  app.use(lipoKoa);
   t.context.server = app.listen(function() {
     t.context.lipo = new Lipo({
       baseURI: `http://localhost:${this.address().port}`

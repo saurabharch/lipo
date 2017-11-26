@@ -1,13 +1,29 @@
-# Lipo
-
-[![build status](https://img.shields.io/travis/niftylettuce/lipo.svg)](https://travis-ci.org/niftylettuce/lipo)
-[![code coverage](https://img.shields.io/codecov/c/github/niftylettuce/lipo.svg)](https://codecov.io/gh/niftylettuce/lipo)
-[![code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![made with lass](https://img.shields.io/badge/made_with-lass-95CC28.svg)](https://lass.js.org)
-[![license](https://img.shields.io/github/license/niftylettuce/lipo.svg)](LICENSE)
-
-> Free image manipulation API service built on top of [Sharp][] (an alternative to [Jimp][], [Graphics Magic][gm], [Image Magick][im], and PhantomJS)
+<h1 align="center">
+  <a href="https://lipo.io"><img src="media/logo-100x61@2x.png" width="100" height="61" alt="lipo" /></a>
+</h1>
+<div align="center">
+  <a href="http://slack.crocodilejs.com"><img src="http://slack.crocodilejs.com/badge.svg" alt="chat" /></a>
+  <a href="https://semaphoreci.com/niftylettuce/lipo"><img src="https://semaphoreci.com/api/v1/niftylettuce/lipo/branches/master/shields_badge.svg" alt="build status"></a>
+  <a href="https://codecov.io/github/lipojs/lipo"><img src="https://img.shields.io/codecov/c/github/lipojs/lipo/master.svg" alt="code coverage" /></a>
+  <a href="https://github.com/sindresorhus/xo"><img src="https://img.shields.io/badge/code_style-XO-5ed9c7.svg" alt="code style" /></a>
+  <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg" alt="styled with prettier" /></a>
+  <a href="https://lass.js.org"><img src="https://img.shields.io/badge/made_with-lass-95CC28.svg" alt="made with lass" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/lipojs/lipo.svg" alt="license" /></a>
+</div>
+<br />
+<div align="center">
+  Lipo is a free image manipulation API service built on top of <a href="#">Sharp</a>
+</div>
+<div align="center">
+  <sub>
+    Need an alternative to <a href="https://github.com/oliver-moran/jimp">Jimp</a>, <a href="https://aheckmann.github.io/gm/">Graphics Magick</a>, <a href="https://github.com/yourdeveloper/node-imagemagick">ImageMagick</a>, or PhantomJS?
+    &bull; Built by <a href="https://github.com/niftylettuce">@niftylettuce</a>
+    and <a href="#contributors">contributors</a>
+  </sub>
+</div>
+<hr />
+<div align="center"><strong>Lipo is a cross-platform and drop-in replacement for Sharp</strong></div>
+<hr />
 
 
 ## Table of Contents
@@ -17,6 +33,8 @@
 * [Rate Limiting](#rate-limiting)
 * [Background](#background)
 * [Deploy Yourself](#deploy-yourself)
+* [Related](#related)
+* [Credits](#credits)
 * [Contributors](#contributors)
 * [License](#license)
 
@@ -58,6 +76,7 @@ You can simply replace instances of `sharp` with `lipo`:
 ```diff
 -const sharp = require('sharp');
 +const Lipo = require('lipo');
++const lipo = new Lipo();
 -sharp('input.jpg')
 +lipo('input.jpg')
   .resize(300, 200)
@@ -79,9 +98,9 @@ Once you sign up for a key, you can pass it as `const lipo = new Lipo({ key: 'YO
 
 ## Background
 
-After attempting to work with a team while building [Lad][], I instructed them how to install [Sharp][].
+While building [Lad][] I was instructing our team how to install [Sharp][], but there was a lot of confusion with libvips and many cross-platform installation issues.
 
-However between Docker, Ubuntu, and Mac cross-platform issues reported by the team, I wanted to drop Sharp completely as a dependency from [Lad][].
+Between Docker, Ubuntu, and Mac cross-platform issues reported by the team, I wanted to drop Sharp completely as a dependency from [Lad][].
 
 I tried pure JavaScript-based solutions like [Jimp][], and even tried PhantomJS and Puppeteer solutions, however they were all too slow.
 
@@ -92,7 +111,20 @@ Thus Lipo was born.
 
 ## Deploy Yourself
 
-See the test folder for an example that shows how to use the middleware exposed as `Lipo.middleware`.
+See the test folder for an example that shows how to use the middleware `lipo-koa` (also see `lipo-express` and other related packages below).
+
+
+## Related
+
+* [lipo-koa][] - Lipo middleware for [Lad][] and [Koa][]
+* [lipo-express][] - Lipo middleware for [Express][] and [Connect][]
+* [lipo-grunt][] - Lipo build task for [Grunt][]
+* [lipo-gulp][] - Lipo build task for [Gulp][]
+
+
+## Credits
+
+Lips by Orin zuu from the Noun Project
 
 
 ## Contributors
@@ -117,12 +149,26 @@ See the test folder for an example that shows how to use the middleware exposed 
 
 [jimp]: https://github.com/oliver-moran/jimp
 
-[gm]: https://aheckmann.github.io/gm/
-
-[im]: https://github.com/yourdeveloper/node-imagemagick
-
 [lad]: https://lad.js.org
 
 [deasync]: https://github.com/abbr/deasync
 
 [custom-fonts-in-emails]: https://github.com/ladjs/custom-fonts-in-emails
+
+[koa]: http://koajs.com
+
+[express]: https://expressjs.com/
+
+[connect]: https://github.com/senchalabs/connect
+
+[lipo-koa]: https://github.com/lipojs/lipo-koa
+
+[lipo-express]: https://github.com/lipojs/lipo-express
+
+[lipo-grunt]: https://github.com/lipojs/lipo-grunt
+
+[lipo-gulp]: https://github.com/lipojs/lipo-gulp
+
+[grunt]: https://gruntjs.com/
+
+[gulp]: https://gulpjs.com/
