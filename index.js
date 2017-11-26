@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const Boom = require('boom');
+const deasync = require('deasync');
 const _ = require('lodash');
 const Frisbee = require('frisbee');
 const FormData = require('form-data');
@@ -112,6 +113,33 @@ const keys = [
   'tile'
 ];
 
+Lipo.prototype.__metadata = function(fn) {
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      const body = new FormData();
+      if (_.isString(this.__input))
+        body.append('input', fs.createReadStream(this.__input));
+      else if (_.isBuffer(this.__input)) body.append('input', this.__input);
+      else if (_.isObject(this.__input))
+        body.append('options', safeStringify(this.__input));
+      body.append('queue', safeStringify(this.__queue));
+      this.__queue = [];
+      const res = await this.__api.post('/', { body });
+      if (res.err) throw res.err;
+      resolve(res.body);
+    } catch (err) {
+      reject(err);
+    }
+  });
+  if (_.isFunction(fn))
+    promise
+      .then(data => {
+        fn(null, data);
+      })
+      .catch(fn);
+  else return promise;
+};
+
 Lipo.prototype.__toFile = function(fileOut, fn) {
   if (!_.isString(fileOut)) throw new Error('File output path required');
   const promise = new Promise(async (resolve, reject) => {
@@ -132,7 +160,8 @@ Lipo.prototype.__toFile = function(fileOut, fn) {
   else return promise;
 };
 
-Lipo.prototype.__toBuffer = function(fn) {
+Lipo.prototype.__toBuffer = function(options = {}, fn) {
+  if (_.isFunction(options)) fn = options;
   const promise = new Promise(async (resolve, reject) => {
     try {
       const body = new FormData();
@@ -153,7 +182,10 @@ Lipo.prototype.__toBuffer = function(fn) {
         channels: Number(res.headers.get('x-sharp-channels')),
         premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
       };
-      resolve(Buffer.concat(res.originalResponse._raw));
+      const data = Buffer.concat(res.originalResponse._raw);
+      if (_.isObject(options) && boolean(options.resolveWithObject))
+        return resolve({ data, info: this.__info });
+      resolve(data);
     } catch (err) {
       reject(err);
     }
@@ -170,9 +202,13 @@ Lipo.prototype.__toBuffer = function(fn) {
 
 keys.forEach(key => {
   Lipo.prototype[key] = function() {
-    if (!['toFile', 'toBuffer'].includes(key)) {
+    if (!['toFile', 'toBuffer', 'metadata'].includes(key)) {
       this.__queue.push([key].concat([].slice.call(arguments)));
       return this;
+    }
+    if (key === 'metadata') {
+      this.__queue.push(['metadata']);
+      return this.__metadata(...[].slice.call(arguments));
     }
     if (key === 'toFile') return this.__toFile(...[].slice.call(arguments));
     return this.__toBuffer(...[].slice.call(arguments));
@@ -184,25 +220,96 @@ Lipo.middleware = async function(ctx) {
     const err = Boom.badRequest(
       _.isFunction(ctx.req.t) ? ctx.req.t(INVALID_QUEUE) : INVALID_QUEUE
     );
+
     if (!_.isString(ctx.req.body.queue)) throw Boom.badRequest(err);
+
     const queue = JSON.parse(ctx.req.body.queue);
+
     if (!_.isArray(queue)) throw Boom.badRequest(err);
+
     const options = _.isString(ctx.req.body.options)
       ? JSON.parse(ctx.req.body.options)
       : null;
+
+    let metadata = false;
+
     const transform = _.reduce(
       queue,
-      (transform, task) => transform[task.shift()](...task),
+      (transform, task) => {
+        if (task[0] === 'metadata') {
+          metadata = true;
+          return transform;
+        }
+        return transform[task.shift()](...task);
+      },
       _.isObject(options) ? sharp(options) : sharp()
-    ).on('info', info => {
-      Object.keys(info).forEach(key => {
-        ctx.set(`x-sharp-${key}`, info[key]);
+    );
+
+    if (_.isFunction(transform.on))
+      transform.on('info', info => {
+        Object.keys(info).forEach(key => {
+          ctx.set(`x-sharp-${key}`, info[key]);
+        });
       });
-    });
-    ctx.body = ctx.req.file ? ctx.req.file.stream.pipe(transform) : transform;
+
+    if (metadata) {
+      if (ctx.req.file) ctx.req.file.stream.pipe(transform);
+      ctx.body = await transform.metadata();
+    } else {
+      ctx.body = ctx.req.file ? ctx.req.file.stream.pipe(transform) : transform;
+    }
   } catch (err) {
     ctx.throw(err);
   }
+};
+
+// <https://github.com/lovell/sharp/issues/360#issuecomment-185162998>
+Lipo.prototype.toFileSync = function(fileOut) {
+  let done = false;
+  let data;
+  this.toFile(fileOut, (err, _data_) => {
+    if (err) {
+      throw err;
+    }
+    data = _data_;
+    done = true;
+  });
+  deasync.loopWhile(() => {
+    return !done;
+  });
+  return data;
+};
+
+Lipo.prototype.toBufferSync = function() {
+  let done = false;
+  let data;
+  this.toBuffer((err, _data_) => {
+    if (err) {
+      throw err;
+    }
+    data = _data_;
+    done = true;
+  });
+  deasync.loopWhile(() => {
+    return !done;
+  });
+  return data;
+};
+
+Lipo.prototype.metadataSync = function() {
+  let done = false;
+  let data;
+  this.metadata((err, _data_) => {
+    if (err) {
+      throw err;
+    }
+    data = _data_;
+    done = true;
+  });
+  deasync.loopWhile(() => {
+    return !done;
+  });
+  return data;
 };
 
 module.exports = Lipo;

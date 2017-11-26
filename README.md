@@ -67,6 +67,8 @@ You can simply replace instances of `sharp` with `lipo`:
   });
 ```
 
+> **Synchronous Methods**: We have also exposed three helper functions `toBufferSync`, `toFileSync`, and `metadataSync`. These are not included in [Sharp's][sharp] API, however we included them since they were needed for our project [custom-fonts-in-emails][]. You can use these if you need to run purely synchronous operations. They use the [deasync][] package under the hood!
+
 
 ## Rate Limiting
 
@@ -120,3 +122,7 @@ See the test folder for an example that shows how to use the middleware exposed 
 [im]: https://github.com/yourdeveloper/node-imagemagick
 
 [lad]: https://lad.js.org
+
+[deasync]: https://github.com/abbr/deasync
+
+[custom-fonts-in-emails]: https://github.com/ladjs/custom-fonts-in-emails
