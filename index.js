@@ -13,7 +13,7 @@ function Lipo(config = {}) {
       baseURI:
         process.env.NODE_ENV === 'test'
           ? 'http://localhost:3000'
-          : 'https://lipo.io'
+          : 'https://api.lipo.io'
     },
     config
   );
