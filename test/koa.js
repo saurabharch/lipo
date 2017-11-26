@@ -46,6 +46,7 @@ test('parallel failure', async t => {
     [100, 200, 300, 400].map(num =>
       t.context
         .lipo(input)
+        .clone()
         .resize(num, num)
         .toFile(jpg)
     )

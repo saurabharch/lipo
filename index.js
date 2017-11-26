@@ -8,7 +8,6 @@ const boolean = require('boolean');
 
 // Object.keys(require('sharp').prototype).filter(key => !key.startsWith('_'))
 const keys = [
-  'clone',
   'metadata',
   'limitInputPixels',
   'sequentialRead',
@@ -245,6 +244,10 @@ class Lipo {
       return !done;
     });
     return data;
+  }
+
+  clone() {
+    return new Lipo(Object.assign({}, this.__config))(this.__input);
   }
 }
 
