@@ -40,6 +40,26 @@ test.cb.beforeEach(t => {
   });
 });
 
+test('parallel failure', async t => {
+  const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
+  const [info1, info2, info3, info4] = await Promise.all(
+    [100, 200, 300, 400].map(num =>
+      t.context
+        .lipo(input)
+        .resize(num, num)
+        .toFile(jpg)
+    )
+  );
+  t.is(info1.width, 100);
+  t.is(info1.height, 100);
+  t.is(info2.width, 200);
+  t.is(info2.height, 200);
+  t.is(info3.width, 300);
+  t.is(info3.height, 300);
+  t.is(info4.width, 400);
+  t.is(info4.height, 400);
+});
+
 test('metadata', async t => {
   const info = await t.context
     .lipo(input)
