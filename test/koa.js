@@ -65,6 +65,33 @@ test('basic', async t => {
   t.is(info.premultiplied, false);
 });
 
+test('basic showing instance can be reused', async t => {
+  const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
+  const info1 = await t.context
+    .lipo(input)
+    .resize(300, 300)
+    .toFile(jpg);
+
+  t.is(info1.format, 'jpeg');
+  t.is(info1.size, 807);
+  t.is(info1.width, 300);
+  t.is(info1.height, 300);
+  t.is(info1.channels, 3);
+  t.is(info1.premultiplied, false);
+
+  const info2 = await t.context
+    .lipo(input)
+    .resize(300, 300)
+    .toFile(jpg);
+
+  t.is(info2.format, 'jpeg');
+  t.is(info2.size, 807);
+  t.is(info2.width, 300);
+  t.is(info2.height, 300);
+  t.is(info2.channels, 3);
+  t.is(info2.premultiplied, false);
+});
+
 test('basic with options', async t => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
   const info = await t.context
