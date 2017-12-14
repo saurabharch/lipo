@@ -12,7 +12,7 @@
 </div>
 <br />
 <div align="center">
-  Lipo is a free image manipulation API service built on top of <a href="#">Sharp</a>
+  Lipo is a free image manipulation API service built on top of <a href="http://sharp.dimens.io/">Sharp</a>
 </div>
 <div align="center">
   <sub>
@@ -36,6 +36,7 @@
 * [Related](#related)
 * [Credits](#credits)
 * [Contributors](#contributors)
+* [Trademark Notice](#trademark-notice)
 * [License](#license)
 
 
@@ -120,6 +121,9 @@ See the test folder for an example that shows how to use the middleware `lipo-ko
 * [lipo-express][] - Lipo middleware for [Express][] and [Connect][]
 * [lipo-grunt][] - Lipo build task for [Grunt][]
 * [lipo-gulp][] - Lipo build task for [Gulp][]
+* [lad][] - Scaffold a [Koa][] webapp and API framework for [Node.js][node]
+* [cabin][] - Logging and analytics solution for [Node.js][node], [Lad][], [Koa][], and [Express][]
+* [lass][] - Scaffold a modern boilerplate for [Node.js][node]
 
 
 ## Credits
@@ -134,6 +138,13 @@ Lips by Orin zuu from the Noun Project
 | **Nick Baugh** | <http://niftylettuce.com/> |
 
 
+## Trademark Notice
+
+Lipo, Lass, Lad, Cabin, and their respective logos are trademarks of Niftylettuce LLC.
+These trademarks may not be reproduced, distributed, transmitted, or otherwise used, except with the prior written permission of Niftylettuce LLC.
+If you are seeking permission to use these trademarks, then please [contact us](mailto:niftylettuce@gmail.com).
+
+
 ## License
 
 [MIT](LICENSE) © [Nick Baugh](http://niftylettuce.com/)
@@ -144,8 +155,6 @@ Lips by Orin zuu from the Noun Project
 [npm]: https://www.npmjs.com/
 
 [yarn]: https://yarnpkg.com/
-
-[sharp]: http://sharp.dimens.io/
 
 [jimp]: https://github.com/oliver-moran/jimp
 
@@ -172,3 +181,11 @@ Lips by Orin zuu from the Noun Project
 [grunt]: https://gruntjs.com/
 
 [gulp]: https://gulpjs.com/
+
+[sharp]: http://sharp.dimens.io/
+
+[cabin]: http://cabinjs.com
+
+[node]: https://nodejs.org
+
+[lass]: https://lass.js.org
