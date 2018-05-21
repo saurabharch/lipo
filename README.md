@@ -89,6 +89,14 @@ You can simply replace instances of `sharp` with `lipo`:
 
 > **Synchronous Methods**: We have also exposed three helper functions `toBufferSync`, `toFileSync`, and `metadataSync`. These are not included in [Sharp's][sharp] API, however we included them since they were needed for our project [custom-fonts-in-emails][]. You can use these if you need to run purely synchronous operations. They use the [deasync][] package under the hood!
 
+You can even use Lipo from the command line:
+
+```sh
+curl -F "input=@/Users/me/Desktop/input.jpg" \
+  -F 'queue=[ [ "resize", 300, 300 ] ]' \
+  -o /Users/me/Desktop/output.jpg \
+  http://localhost:3000
+```
 
 ## Rate Limiting
 
@@ -150,7 +158,7 @@ If you are seeking permission to use these trademarks, then please [contact us](
 [MIT](LICENSE) © [Nick Baugh](http://niftylettuce.com/)
 
 
-## 
+##
 
 [npm]: https://www.npmjs.com/
 
