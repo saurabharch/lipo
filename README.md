@@ -3,7 +3,7 @@
 </h1>
 <div align="center">
   <a href="http://slack.crocodilejs.com"><img src="http://slack.crocodilejs.com/badge.svg" alt="chat" /></a>
-  <a href="https://semaphoreci.com/niftylettuce/lipo"><img src="https://semaphoreci.com/api/v1/niftylettuce/lipo/branches/master/shields_badge.svg" alt="build status"></a>
+  <a href="https://travis-ci.org/lipojs/lipo"><img src="https://img.shields.io/travis/lipojs/lipo.svg" alt="build status" /></a>
   <a href="https://codecov.io/github/lipojs/lipo"><img src="https://img.shields.io/codecov/c/github/lipojs/lipo/master.svg" alt="code coverage" /></a>
   <a href="https://github.com/sindresorhus/xo"><img src="https://img.shields.io/badge/code_style-XO-5ed9c7.svg" alt="code style" /></a>
   <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg" alt="styled with prettier" /></a>
