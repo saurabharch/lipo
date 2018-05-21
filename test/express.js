@@ -6,10 +6,9 @@ const uuid = require('uuid');
 const multer = require('multer');
 const bytes = require('bytes');
 const express = require('express');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const lipoExpress = require('lipo-express');
 
-const Lipo = require('../');
+const Lipo = require('../lib');
 
 const input = path.join(__dirname, 'fixtures', 'input.jpg');
 
@@ -23,7 +22,7 @@ const upload = multer({
   }
 });
 
-test.cb.beforeEach(t => {
+test.beforeEach.cb(t => {
   const app = express();
   app.use(upload.single('input'));
   // use lipo's express middleware
@@ -54,7 +53,7 @@ test('basic', async t => {
     .resize(300, 300)
     .toFile(jpg);
   t.is(info.format, 'jpeg');
-  t.is(info.size, 807);
+  t.is(info.size, 1498);
   t.is(info.width, 300);
   t.is(info.height, 300);
   t.is(info.channels, 3);
@@ -90,7 +89,7 @@ test.cb('basic with callback', t => {
     .toFile(jpg, (err, info) => {
       if (err) return t.end(err);
       t.is(info.format, 'jpeg');
-      t.is(info.size, 807);
+      t.is(info.size, 1498);
       t.is(info.width, 300);
       t.is(info.height, 300);
       t.is(info.channels, 3);
@@ -107,7 +106,7 @@ test('convert to png', async t => {
     .png()
     .toFile(png);
   t.is(info.format, 'png');
-  t.is(info.size, 610);
+  t.is(info.size, 641);
   t.is(info.width, 200);
   t.is(info.height, 200);
   t.is(info.channels, 3);
@@ -132,7 +131,7 @@ test('buffer with `options.resolveWithObject`', async t => {
   t.true(_.isBuffer(data));
   t.true(_.isObject(info));
   t.is(info.format, 'png');
-  t.is(info.size, 610);
+  t.is(info.size, 641);
   t.is(info.width, 200);
   t.is(info.height, 200);
   t.is(info.channels, 3);
@@ -158,7 +157,7 @@ test('toFileSync', t => {
     .resize(300, 300)
     .toFileSync(jpg);
   t.is(info.format, 'jpeg');
-  t.is(info.size, 807);
+  t.is(info.size, 1498);
   t.is(info.width, 300);
   t.is(info.height, 300);
   t.is(info.channels, 3);

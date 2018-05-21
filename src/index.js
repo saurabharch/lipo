@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('fs');
 const deasync = require('deasync');
 const _ = require('lodash');
 const Frisbee = require('frisbee');
@@ -61,7 +61,7 @@ class Lipo {
       {
         key: process.env.LIPO_KEY || '',
         baseURI:
-          process.env.NODE_ENV === 'test'
+          process.env.LIPO === 'true'
             ? 'http://localhost:3000'
             : 'https://api.lipo.io'
       },
@@ -141,9 +141,36 @@ class Lipo {
     if (!_.isString(fileOut)) throw new Error('File output path required');
     const promise = new Promise(async (resolve, reject) => {
       try {
-        const data = await this.__toBuffer();
-        await fs.writeFile(fileOut, data);
-        resolve(this.__info);
+        const body = new FormData();
+        if (_.isString(this.__input))
+          body.append('input', fs.createReadStream(this.__input));
+        else if (_.isBuffer(this.__input)) body.append('input', this.__input);
+        else if (_.isObject(this.__input))
+          body.append('options', safeStringify(this.__input));
+        body.append('queue', safeStringify(this.__queue));
+        this.__queue = [];
+        const res = await this.__api.post('/', { body, raw: true });
+        if (res.err) throw res.err;
+        this.__info = {
+          format: res.headers.get('x-sharp-format'),
+          size: Number(res.headers.get('x-sharp-size')),
+          width: Number(res.headers.get('x-sharp-width')),
+          height: Number(res.headers.get('x-sharp-height')),
+          channels: Number(res.headers.get('x-sharp-channels')),
+          premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
+        };
+        const stream = fs.createWriteStream(fileOut);
+        // let timer;
+        // stream.on('open', () => {
+        //   timer = setTimeout(() => {
+        //     stream.close();
+        //     reject(new Error('Timed out while writing file'));
+        //   }, 10000);
+        // });
+        stream.on('error', reject).on('finish', () => {
+          resolve(this.__info);
+        });
+        res.body.on('error', reject).pipe(stream);
       } catch (err) {
         reject(err);
       }
@@ -169,7 +196,7 @@ class Lipo {
           body.append('options', safeStringify(this.__input));
         body.append('queue', safeStringify(this.__queue));
         this.__queue = [];
-        const res = await this.__api.post('/', { body });
+        const res = await this.__api.post('/', { body, raw: true });
         if (res.err) throw res.err;
         this.__info = {
           format: res.headers.get('x-sharp-format'),
@@ -179,7 +206,7 @@ class Lipo {
           channels: Number(res.headers.get('x-sharp-channels')),
           premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
         };
-        const data = Buffer.concat(res.originalResponse._raw);
+        const data = await res.buffer();
         if (_.isObject(options) && boolean(options.resolveWithObject))
           return resolve({ data, info: this.__info });
         resolve(data);
@@ -252,17 +279,17 @@ class Lipo {
 }
 
 keys.forEach(key => {
-  Lipo.prototype[key] = function() {
+  Lipo.prototype[key] = function(...args) {
     if (!['toFile', 'toBuffer', 'metadata'].includes(key)) {
-      this.__queue.push([key].concat([].slice.call(arguments)));
+      this.__queue.push([key].concat(args));
       return this;
     }
     if (key === 'metadata') {
       this.__queue.push(['metadata']);
-      return this.__metadata(...[].slice.call(arguments));
+      return this.__metadata(...args);
     }
-    if (key === 'toFile') return this.__toFile(...[].slice.call(arguments));
-    return this.__toBuffer(...[].slice.call(arguments));
+    if (key === 'toFile') return this.__toFile(...args);
+    return this.__toBuffer(...args);
   };
 });
 
