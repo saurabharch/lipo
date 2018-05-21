@@ -1,7 +1,7 @@
 {
   "name": "lipo",
   "description": "Free image manipulation API service built on top of Sharp (an alternative to Jimp, Graphics Magic, Image Magick, and PhantomJS)",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Nick Baugh <niftylettuce@gmail.com> (http://niftylettuce.com/)",
   "bugs": {
     "url": "https://github.com/lipojs/lipo/issues",
