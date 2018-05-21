@@ -95,7 +95,7 @@ You can even use Lipo from the command line:
 curl -F "input=@/Users/me/Desktop/input.jpg" \
   -F 'queue=[ [ "resize", 300, 300 ] ]' \
   -o /Users/me/Desktop/output.jpg \
-  http://localhost:3000
+  https://api.lipo.io
 ```
 
 ## Rate Limiting
