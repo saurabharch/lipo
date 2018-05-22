@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://lipo.io"><img src="media/logo-100x61@2x.png" width="100" height="61" alt="lipo" /></a>
+  <a href="https://lipo.io"><img src="media/logo.png" alt="lipo" /></a>
 </h1>
 <div align="center">
   <a href="http://slack.crocodilejs.com"><img src="http://slack.crocodilejs.com/badge.svg" alt="chat" /></a>
@@ -98,6 +98,7 @@ curl -F "input=@/Users/me/Desktop/input.jpg" \
   https://api.lipo.io
 ```
 
+
 ## Rate Limiting
 
 Note that if you use make more than 100 requests per hour from the same IP address or wish to exceed 20MB file upload size limitation, we will rate limit you until you sign up for an API key at <https://lipo.io>.
@@ -158,7 +159,9 @@ If you are seeking permission to use these trademarks, then please [contact us](
 [MIT](LICENSE) © [Nick Baugh](http://niftylettuce.com/)
 
 
-##
+## 
+
+<a href="#"><img src="media/footer.png" alt="#" /></a>
 
 [npm]: https://www.npmjs.com/
 
