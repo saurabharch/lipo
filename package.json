@@ -146,6 +146,8 @@
       "no-warning-comments": "off"
     },
     "space": true,
-    "ignores": [ "config.js" ]
+    "ignores": [
+      "config.js"
+    ]
   }
 }
