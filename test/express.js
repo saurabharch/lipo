@@ -179,3 +179,17 @@ test('metadataSync', t => {
   t.is(info.width, 100);
   t.is(info.height, 100);
 });
+
+test('crop with strategy', async t => {
+  const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
+  const info = await t.context
+    .lipo(input)
+    .resize(300, 300)
+    .crop(Lipo.strategy.entropy)
+    .toFile(jpg);
+  t.is(info.format, 'jpeg');
+  t.is(info.width, 300);
+  t.is(info.height, 300);
+  t.is(info.channels, 3);
+  t.is(info.premultiplied, false);
+});

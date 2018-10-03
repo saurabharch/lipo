@@ -98,6 +98,8 @@ curl -F "input=@/Users/me/Desktop/input.jpg" \
   https://api.lipo.io
 ```
 
+> **Resize Method Options**: If you need to use constant values such as `sharp.kernel.nearest`, `sharp.gravity.centre`, or any other option from [resize](https://github.com/lovell/sharp/blob/master/docs/api-resize.md#resize), please use the alternate form of `Lipo.kernel.nearest` and `Lipo.gravity.centre`, respectively (just as an example)
+
 
 ## Rate Limiting
 
