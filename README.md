@@ -12,7 +12,7 @@
 </div>
 <br />
 <div align="center">
-  Lipo is a free image manipulation API service built on top of <a href="http://sharp.dimens.io/">Sharp</a>
+  Lipo is a free image manipulation API service built on top of <a href="https://github.com/lovell/sharp">Sharp</a>
 </div>
 <div align="center">
   <sub>
