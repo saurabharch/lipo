@@ -2,7 +2,7 @@
   <a href="https://lipo.io"><img src="media/logo.png" alt="lipo" /></a>
 </h1>
 <div align="center">
-  <a href="http://slack.crocodilejs.com"><img src="http://slack.crocodilejs.com/badge.svg" alt="chat" /></a>
+  <a href="https://slack.crocodilejs.com"><img src="https://slack.crocodilejs.com/badge.svg" alt="chat" /></a>
   <a href="https://travis-ci.org/lipojs/lipo"><img src="https://img.shields.io/travis/lipojs/lipo.svg" alt="build status" /></a>
   <a href="https://codecov.io/github/lipojs/lipo"><img src="https://img.shields.io/codecov/c/github/lipojs/lipo/master.svg" alt="code coverage" /></a>
   <a href="https://github.com/sindresorhus/xo"><img src="https://img.shields.io/badge/code_style-XO-5ed9c7.svg" alt="code style" /></a>
