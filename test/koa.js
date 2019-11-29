@@ -4,7 +4,7 @@ const _ = require('lodash');
 const test = require('ava');
 const uuid = require('uuid');
 const Koa = require('koa');
-const multer = require('koa-multer');
+const multer = require('@koa/multer');
 const bytes = require('bytes');
 const errorHandler = require('koa-better-error-handler');
 const lipoKoa = require('lipo-koa');
@@ -27,9 +27,11 @@ test.beforeEach.cb(t => {
   const app = new Koa();
   app.use(upload.single('input'));
   // override koa's undocumented error handler
-  // TODO: <https://github.com/sindresorhus/eslint-plugin-unicorn/issues/174>
-  // eslint-disable-next-line unicorn/prefer-add-event-listener
+  // <https://github.com/sindresorhus/eslint-plugin-unicorn/issues/174>
   app.context.onerror = errorHandler;
+  // listen for error and log events emitted by app
+  app.on('error', console.error);
+  app.on('log', console.log);
   // specify that this is our api
   app.context.api = true;
   // use lipo's koa middleware
@@ -205,42 +207,11 @@ test.cb('buffer with callback', t => {
     });
 });
 
-test('toFileSync', t => {
-  const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
-  const info = t.context
-    .lipo(input)
-    .resize(300, 300)
-    .toFileSync(jpg);
-  t.is(info.format, 'jpeg');
-  // t.is(info.size, 1498);
-  t.is(info.width, 300);
-  t.is(info.height, 300);
-  t.is(info.channels, 3);
-  t.is(info.premultiplied, false);
-});
-
-test('toBufferSync', t => {
-  const data = t.context
-    .lipo(input)
-    .resize(200, 200)
-    .png()
-    .toBufferSync();
-  t.true(_.isBuffer(data));
-});
-
-test('metadataSync', t => {
-  const info = t.context.lipo(input).metadataSync();
-  t.is(info.format, 'jpeg');
-  t.is(info.width, 100);
-  t.is(info.height, 100);
-});
-
 test('crop with strategy', async t => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
   const info = await t.context
     .lipo(input)
-    .resize(300, 300)
-    .crop(Lipo.strategy.entropy)
+    .resize(300, 300, { fit: 'cover', position: 'entropy' })
     .toFile(jpg);
   t.is(info.format, 'jpeg');
   t.is(info.width, 300);

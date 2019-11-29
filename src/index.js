@@ -1,10 +1,11 @@
 const fs = require('fs');
-const deasync = require('deasync');
-const _ = require('lodash');
-const Frisbee = require('frisbee');
+
 const FormData = require('form-data');
+const Frisbee = require('frisbee');
+const _ = require('lodash');
 const safeStringify = require('fast-safe-stringify');
-const boolean = require('boolean');
+const universalify = require('universalify');
+const { boolean } = require('boolean');
 
 // Object.keys(require('sharp').prototype).filter(key => !key.startsWith('_'))
 const keys = [
@@ -57,16 +58,14 @@ const keys = [
 
 class Lipo {
   constructor(config = {}) {
-    this.__config = Object.assign(
-      {
-        key: process.env.LIPO_KEY || '',
-        baseURI:
-          process.env.LIPO === 'true'
-            ? 'http://localhost:3000'
-            : 'https://api.lipo.io'
-      },
-      config
-    );
+    this.__config = {
+      key: process.env.LIPO_KEY || '',
+      baseURI:
+        process.env.LIPO === 'true'
+          ? 'http://localhost:3000'
+          : 'https://api.lipo.io',
+      ...config
+    };
 
     this.__api = new Frisbee({
       baseURI: this.__config.baseURI,
@@ -78,6 +77,10 @@ class Lipo {
     if (this.__config.key) this.__api.auth(this.__config.key);
 
     this.__queue = [];
+
+    this.__metadata = universalify.fromPromise(this.__metadata);
+    this.__toFile = universalify.fromPromise(this.__toFile);
+    this.__toBuffer = universalify.fromPromise(this.__toBuffer);
 
     return input => {
       this.__input = input;
@@ -110,171 +113,84 @@ class Lipo {
     */
   }
 
-  __metadata(fn) {
-    const promise = new Promise(async (resolve, reject) => {
-      try {
-        const body = new FormData();
-        if (_.isString(this.__input))
-          body.append('input', fs.createReadStream(this.__input));
-        else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-        else if (_.isObject(this.__input))
-          body.append('options', safeStringify(this.__input));
-        body.append('queue', safeStringify(this.__queue));
-        this.__queue = [];
-        const res = await this.__api.post('/', { body });
-        if (res.err) throw res.err;
-        resolve(res.body);
-      } catch (err) {
-        reject(err);
-      }
-    });
-    if (_.isFunction(fn))
-      promise
-        .then(data => {
-          fn(null, data);
-        })
-        .catch(fn);
-    else return promise;
+  async __metadata() {
+    const body = new FormData();
+    if (_.isString(this.__input))
+      body.append('input', fs.createReadStream(this.__input));
+    else if (_.isBuffer(this.__input)) body.append('input', this.__input);
+    else if (_.isObject(this.__input))
+      body.append('options', safeStringify(this.__input));
+    body.append('queue', safeStringify(this.__queue));
+    this.__queue = [];
+    const res = await this.__api.post('/', { body });
+    if (res.err) throw res.err;
+    return res.body;
   }
 
-  __toFile(fileOut, fn) {
+  async __toFile(fileOut) {
     if (!_.isString(fileOut)) throw new Error('File output path required');
-    const promise = new Promise(async (resolve, reject) => {
-      try {
-        const body = new FormData();
-        if (_.isString(this.__input))
-          body.append('input', fs.createReadStream(this.__input));
-        else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-        else if (_.isObject(this.__input))
-          body.append('options', safeStringify(this.__input));
-        body.append('queue', safeStringify(this.__queue));
-        this.__queue = [];
-        const res = await this.__api.post('/', { body, raw: true });
-        if (res.err) throw res.err;
-        this.__info = {
-          format: res.headers.get('x-sharp-format'),
-          size: Number(res.headers.get('x-sharp-size')),
-          width: Number(res.headers.get('x-sharp-width')),
-          height: Number(res.headers.get('x-sharp-height')),
-          channels: Number(res.headers.get('x-sharp-channels')),
-          premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
-        };
-        const stream = fs.createWriteStream(fileOut);
-        // let timer;
-        // stream.on('open', () => {
-        //   timer = setTimeout(() => {
-        //     stream.close();
-        //     reject(new Error('Timed out while writing file'));
-        //   }, 10000);
-        // });
-        stream.on('error', reject).on('finish', () => {
-          resolve(this.__info);
-        });
-        res.body.on('error', reject).pipe(stream);
-      } catch (err) {
-        reject(err);
-      }
+    const body = new FormData();
+    if (_.isString(this.__input))
+      body.append('input', fs.createReadStream(this.__input));
+    else if (_.isBuffer(this.__input)) body.append('input', this.__input);
+    else if (_.isObject(this.__input))
+      body.append('options', safeStringify(this.__input));
+    body.append('queue', safeStringify(this.__queue));
+    this.__queue = [];
+    const res = await this.__api.post('/', { body, raw: true });
+    if (res.err) throw res.err;
+    this.__info = {
+      format: res.headers.get('x-sharp-format'),
+      size: Number(res.headers.get('x-sharp-size')),
+      width: Number(res.headers.get('x-sharp-width')),
+      height: Number(res.headers.get('x-sharp-height')),
+      channels: Number(res.headers.get('x-sharp-channels')),
+      premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
+    };
+    const stream = fs.createWriteStream(fileOut);
+    // let timer;
+    // stream.on('open', () => {
+    //   timer = setTimeout(() => {
+    //     stream.close();
+    //     reject(new Error('Timed out while writing file'));
+    //   }, 10000);
+    // });
+    const promise = new Promise((resolve, reject) => {
+      stream.on('error', reject).on('finish', () => {
+        resolve(this.__info);
+      });
+      res.body.on('error', reject).pipe(stream);
     });
-    if (_.isFunction(fn))
-      promise
-        .then(data => {
-          fn(null, data);
-        })
-        .catch(fn);
-    else return promise;
+    return promise;
   }
 
-  __toBuffer(options = {}, fn) {
-    if (_.isFunction(options)) fn = options;
-    const promise = new Promise(async (resolve, reject) => {
-      try {
-        const body = new FormData();
-        if (_.isString(this.__input))
-          body.append('input', fs.createReadStream(this.__input));
-        else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-        else if (_.isObject(this.__input))
-          body.append('options', safeStringify(this.__input));
-        body.append('queue', safeStringify(this.__queue));
-        this.__queue = [];
-        const res = await this.__api.post('/', { body, raw: true });
-        if (res.err) throw res.err;
-        this.__info = {
-          format: res.headers.get('x-sharp-format'),
-          size: Number(res.headers.get('x-sharp-size')),
-          width: Number(res.headers.get('x-sharp-width')),
-          height: Number(res.headers.get('x-sharp-height')),
-          channels: Number(res.headers.get('x-sharp-channels')),
-          premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
-        };
-        const data = await res.buffer();
-        if (_.isObject(options) && boolean(options.resolveWithObject))
-          return resolve({ data, info: this.__info });
-        resolve(data);
-      } catch (err) {
-        reject(err);
-      }
-    });
-
-    if (_.isFunction(fn))
-      promise
-        .then(data => {
-          fn(null, data, this.__info);
-        })
-        .catch(fn);
-    else return promise;
-  }
-
-  // <https://github.com/lovell/sharp/issues/360#issuecomment-185162998>
-  toFileSync(fileOut) {
-    let done = false;
-    let data;
-    this.toFile(fileOut, (err, _data_) => {
-      if (err) {
-        throw err;
-      }
-      data = _data_;
-      done = true;
-    });
-    deasync.loopWhile(() => {
-      return !done;
-    });
-    return data;
-  }
-
-  toBufferSync() {
-    let done = false;
-    let data;
-    this.toBuffer((err, _data_) => {
-      if (err) {
-        throw err;
-      }
-      data = _data_;
-      done = true;
-    });
-    deasync.loopWhile(() => {
-      return !done;
-    });
-    return data;
-  }
-
-  metadataSync() {
-    let done = false;
-    let data;
-    this.metadata((err, _data_) => {
-      if (err) {
-        throw err;
-      }
-      data = _data_;
-      done = true;
-    });
-    deasync.loopWhile(() => {
-      return !done;
-    });
+  async __toBuffer(options = {}) {
+    const body = new FormData();
+    if (_.isString(this.__input))
+      body.append('input', fs.createReadStream(this.__input));
+    else if (_.isBuffer(this.__input)) body.append('input', this.__input);
+    else if (_.isObject(this.__input))
+      body.append('options', safeStringify(this.__input));
+    body.append('queue', safeStringify(this.__queue));
+    this.__queue = [];
+    const res = await this.__api.post('/', { body, raw: true });
+    if (res.err) throw res.err;
+    this.__info = {
+      format: res.headers.get('x-sharp-format'),
+      size: Number(res.headers.get('x-sharp-size')),
+      width: Number(res.headers.get('x-sharp-width')),
+      height: Number(res.headers.get('x-sharp-height')),
+      channels: Number(res.headers.get('x-sharp-channels')),
+      premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
+    };
+    const data = await res.buffer();
+    if (_.isObject(options) && boolean(options.resolveWithObject))
+      return { data, info: this.__info };
     return data;
   }
 
   clone() {
-    return new Lipo(Object.assign({}, this.__config))(this.__input);
+    return new Lipo({ ...this.__config })(this.__input);
   }
 }
 
@@ -284,10 +200,12 @@ keys.forEach(key => {
       this.__queue.push([key].concat(args));
       return this;
     }
+
     if (key === 'metadata') {
       this.__queue.push(['metadata']);
       return this.__metadata(...args);
     }
+
     if (key === 'toFile') return this.__toFile(...args);
     return this.__toBuffer(...args);
   };
