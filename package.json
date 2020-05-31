@@ -136,7 +136,6 @@
     "url": "https://github.com/lipojs/lipo"
   },
   "scripts": {
-    "precommit": "lint-staged && npm test",
     "lint:md": "remark . -qfo",
     "lint:c": "xo",
     "lint": "npm run lint:c && npm run lint:md",
@@ -147,6 +146,7 @@
     "test": "cross-env NODE_ENV=test LIPO=true ava",
     "test-coverage": "cross-env NODE_ENV=test LIPO=true nyc test",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "precommit": "lint-staged && npm test",
     "watch": "babel src --watch --out-dir lib"
   },
   "xo": {
