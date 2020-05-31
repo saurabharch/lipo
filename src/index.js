@@ -213,11 +213,15 @@ for (const key of keys) {
   };
 }
 
+function lipo(config) {
+  return new Lipo(config);
+}
+
 // Sourced from `lib/resize.js`:
 // <https://github.com/lovell/sharp/blob/master/lib/resize.js>
 
 // Weighting to apply when using contain/cover fit.
-Lipo.gravity = {
+lipo.gravity = {
   center: 0,
   centre: 0,
   north: 1,
@@ -231,7 +235,7 @@ Lipo.gravity = {
 };
 
 // Position to apply when using contain/cover fit.
-Lipo.position = {
+lipo.position = {
   top: 1,
   right: 2,
   bottom: 3,
@@ -243,13 +247,13 @@ Lipo.position = {
 };
 
 // Strategies for automagic cover behaviour.
-Lipo.strategy = {
+lipo.strategy = {
   entropy: 16,
   attention: 17
 };
 
 // Reduction kernels.
-Lipo.kernel = {
+lipo.kernel = {
   nearest: 'nearest',
   cubic: 'cubic',
   lanczos2: 'lanczos2',
@@ -257,7 +261,7 @@ Lipo.kernel = {
 };
 
 // Methods by which an image can be resized to fit the provided dimensions.
-Lipo.fit = {
+lipo.fit = {
   contain: 'contain',
   cover: 'cover',
   fill: 'fill',
@@ -265,6 +269,4 @@ Lipo.fit = {
   outside: 'outside'
 };
 
-module.exports = function(config) {
-  return new Lipo(config);
-};
+module.exports = lipo;
