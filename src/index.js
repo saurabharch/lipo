@@ -196,7 +196,7 @@ class Lipo {
   }
 }
 
-keys.forEach(key => {
+for (const key of keys) {
   Lipo.prototype[key] = function(...args) {
     if (!['toFile', 'toBuffer', 'metadata'].includes(key)) {
       this.__queue.push([key].concat(args));
@@ -211,7 +211,7 @@ keys.forEach(key => {
     if (key === 'toFile') return this.__toFile(...args);
     return this.__toBuffer(...args);
   };
-});
+}
 
 // Sourced from `lib/resize.js`:
 // <https://github.com/lovell/sharp/blob/master/lib/resize.js>
