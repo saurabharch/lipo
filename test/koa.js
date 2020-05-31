@@ -10,7 +10,7 @@ const bytes = require('bytes');
 const errorHandler = require('koa-better-error-handler');
 const lipoKoa = require('lipo-koa');
 
-const Lipo = require('../lib');
+const lipo = require('../lib');
 
 const input = path.join(__dirname, 'fixtures', 'input.jpg');
 
@@ -38,7 +38,7 @@ test.beforeEach.cb(t => {
   // use lipo's koa middleware
   app.use(lipoKoa);
   t.context.server = app.listen(function() {
-    t.context.lipo = new Lipo({
+    t.context.lipo = lipo({
       baseURI: `http://localhost:${this.address().port}`
     });
     t.end();

@@ -58,6 +58,7 @@
     "nyc": "^14.1.1",
     "remark-cli": "^7.0.1",
     "remark-preset-github": "^0.0.16",
+    "rimraf": "^3.0.2",
     "uuid": "^3.3.3",
     "xo": "^0.25.3"
   },
@@ -137,15 +138,18 @@
     "url": "https://github.com/lipojs/lipo"
   },
   "scripts": {
-    "ava": "cross-env NODE_ENV=test LIPO=true ava",
-    "build": "node_modules/.bin/babel src --out-dir lib",
+    "lint:md": "remark . -qfo",
+    "lint:c": "xo",
+    "lint": "npm run lint:c && npm run lint:md",
+    "prebuild": "rimraf lib",
+    "build": "babel src --out-dir lib",
+    "postbuild": "npm run lint",
+    "pretest": "npm run build",
+    "test": "cross-env NODE_ENV=test LIPO=true ava",
+    "test-coverage": "cross-env NODE_ENV=test LIPO=true nyc test",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "lint": "xo && remark . -qfo",
-    "nyc": "cross-env NODE_ENV=test LIPO=true nyc ava",
     "precommit": "lint-staged && npm test",
-    "test": "npm run build && npm run lint && npm run ava",
-    "test-coverage": "npm run build && npm run lint && npm run nyc",
-    "watch": "node_modules/.bin/babel src --watch --out-dir lib"
+    "watch": "babel src --watch --out-dir lib"
   },
   "xo": {
     "prettier": true,

@@ -12,7 +12,7 @@ const multer = require('multer');
 const test = require('ava');
 const uuid = require('uuid');
 
-const Lipo = require('../lib');
+const lipo = require('../lib');
 
 const input = path.join(__dirname, 'fixtures', 'input.jpg');
 
@@ -34,7 +34,7 @@ test.beforeEach.cb(t => {
   // error handler
   app.use(errorHandler());
   t.context.server = app.listen(function() {
-    t.context.lipo = new Lipo({
+    t.context.lipo = lipo({
       baseURI: `http://localhost:${this.address().port}`
     });
     t.end();

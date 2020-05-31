@@ -265,4 +265,6 @@ Lipo.fit = {
   outside: 'outside'
 };
 
-module.exports = Lipo;
+module.exports = function(config) {
+  return new Lipo(config);
+};
