@@ -1,5 +1,6 @@
 docute.init({
   debug: true,
+  routerMode: 'history',
   title: 'Lipo.io',
   repo: 'lipojs/lipo',
   'edit-link': 'https://github.com/lipojs/lipo/tree/master/',
