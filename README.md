@@ -60,8 +60,7 @@ yarn add lipo
 > To keep things simple you can use the exact same API that [Sharp][] offers.
 
 ```js
-const Lipo = require('lipo');
-const lipo = new Lipo();
+const lipo = require('lipo');
 lipo('input.jpg')
  .resize(300, 300)
  .toFile('output.jpg', err => {
@@ -76,8 +75,7 @@ You can simply replace instances of `sharp` with `lipo`:
 
 ```diff
 -const sharp = require('sharp');
-+const Lipo = require('lipo');
-+const lipo = new Lipo();
++const lipo = require('lipo');
 -sharp('input.jpg')
 +lipo('input.jpg')
   .resize(300, 200)
@@ -103,7 +101,7 @@ curl -F "input=@/Users/me/Desktop/input.jpg" \
 
 Note that if you use make more than 100 requests per hour from the same IP address or wish to exceed 20MB file upload size limitation, we will rate limit you until you sign up for an API key at <https://lipo.io>.
 
-Once you sign up for a key, you can pass it as `const lipo = new Lipo({ key: 'YOUR_API_KEY_HERE' });` or as an environment variable (e.g. `LIPO_KEY=YOUR_API_KEY_HERE node app.js`).
+Once you sign up for a key, you can pass it as `const lipo = require('lipo')({ key: 'YOUR_API_KEY_HERE' });` or as an environment variable (e.g. `LIPO_KEY=YOUR_API_KEY_HERE node app.js`).
 
 
 ## Background
@@ -142,9 +140,10 @@ Lips by Orin zuu from the Noun Project
 
 ## Contributors
 
-| Name           | Website                    |
-| -------------- | -------------------------- |
-| **Nick Baugh** | <http://niftylettuce.com/> |
+| Name            | Website                     |
+| --------------- | --------------------------- |
+| **Nick Baugh**  | <http://niftylettuce.com/>  |
+| **Imed Jaberi** | <https://3imed-jaberi.com/> |
 
 
 ## Trademark Notice

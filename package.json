@@ -18,7 +18,8 @@
     ]
   },
   "contributors": [
-    "Nick Baugh <niftylettuce@gmail.com> (http://niftylettuce.com/)"
+    "Nick Baugh <niftylettuce@gmail.com> (http://niftylettuce.com/)",
+    "Imed Jaberi <imed_jebari@hotmail.fr> (https://3imed-jaberi.com/)"
   ],
   "dependencies": {
     "boolean": "^3.0.0",
