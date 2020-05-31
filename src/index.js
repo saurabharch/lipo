@@ -2,7 +2,9 @@ const fs = require('fs');
 
 const FormData = require('form-data');
 const Frisbee = require('frisbee');
-const _ = require('lodash');
+const _isString = require('lodash.isstring');
+const _isBuffer = require('lodash.isbuffer');
+const _isObject = require('lodash.isobject');
 const safeStringify = require('fast-safe-stringify');
 const universalify = require('universalify');
 const { boolean } = require('boolean');
@@ -104,9 +106,9 @@ class Lipo {
       //   - height (Number)
       //   - channels (Number; 3-4)
       //   - background (String | Object)
-      if (_.isString(input) || _.isBuffer(input)) this.__input = input;
-      else if (_.isObject(this.__input)) this.__options = input;
-      if (!_.isObject(this.__input) && _.isObject(options))
+      if (_isString(input) || _isBuffer(input)) this.__input = input;
+      else if (_isObject(this.__input)) this.__options = input;
+      if (!_isObject(this.__input) && _isObject(options))
         this._options = options;
       return this;
     };
@@ -115,10 +117,10 @@ class Lipo {
 
   async __metadata() {
     const body = new FormData();
-    if (_.isString(this.__input))
+    if (_isString(this.__input))
       body.append('input', fs.createReadStream(this.__input));
-    else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-    else if (_.isObject(this.__input))
+    else if (_isBuffer(this.__input)) body.append('input', this.__input);
+    else if (_isObject(this.__input))
       body.append('options', safeStringify(this.__input));
     body.append('queue', safeStringify(this.__queue));
     this.__queue = [];
@@ -128,12 +130,12 @@ class Lipo {
   }
 
   async __toFile(fileOut) {
-    if (!_.isString(fileOut)) throw new Error('File output path required');
+    if (!_isString(fileOut)) throw new Error('File output path required');
     const body = new FormData();
-    if (_.isString(this.__input))
+    if (_isString(this.__input))
       body.append('input', fs.createReadStream(this.__input));
-    else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-    else if (_.isObject(this.__input))
+    else if (_isBuffer(this.__input)) body.append('input', this.__input);
+    else if (_isObject(this.__input))
       body.append('options', safeStringify(this.__input));
     body.append('queue', safeStringify(this.__queue));
     this.__queue = [];
@@ -166,10 +168,10 @@ class Lipo {
 
   async __toBuffer(options = {}) {
     const body = new FormData();
-    if (_.isString(this.__input))
+    if (_isString(this.__input))
       body.append('input', fs.createReadStream(this.__input));
-    else if (_.isBuffer(this.__input)) body.append('input', this.__input);
-    else if (_.isObject(this.__input))
+    else if (_isBuffer(this.__input)) body.append('input', this.__input);
+    else if (_isObject(this.__input))
       body.append('options', safeStringify(this.__input));
     body.append('queue', safeStringify(this.__queue));
     this.__queue = [];
@@ -184,7 +186,7 @@ class Lipo {
       premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
     };
     const data = await res.buffer();
-    if (_.isObject(options) && boolean(options.resolveWithObject))
+    if (_isObject(options) && boolean(options.resolveWithObject))
       return { data, info: this.__info };
     return data;
   }

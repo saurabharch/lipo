@@ -1,6 +1,7 @@
 const path = require('path');
 const os = require('os');
-const _ = require('lodash');
+const _isBuffer = require('lodash.isbuffer');
+const _isObject = require('lodash.isobject');
 const test = require('ava');
 const uuid = require('uuid');
 const Koa = require('koa');
@@ -176,7 +177,7 @@ test('buffer', async t => {
     .resize(200, 200)
     .png()
     .toBuffer();
-  t.true(_.isBuffer(data));
+  t.true(_isBuffer(data));
 });
 
 test('buffer with `options.resolveWithObject`', async t => {
@@ -185,8 +186,8 @@ test('buffer with `options.resolveWithObject`', async t => {
     .resize(200, 200)
     .png()
     .toBuffer({ resolveWithObject: true });
-  t.true(_.isBuffer(data));
-  t.true(_.isObject(info));
+  t.true(_isBuffer(data));
+  t.true(_isObject(info));
   t.is(info.format, 'png');
   // t.is(info.size, 641);
   t.is(info.width, 200);
@@ -202,7 +203,7 @@ test.cb('buffer with callback', t => {
     .png()
     .toBuffer((err, data) => {
       if (err) return t.end(err);
-      t.true(_.isBuffer(data));
+      t.true(_isBuffer(data));
       t.end();
     });
 });
