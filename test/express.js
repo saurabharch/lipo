@@ -26,14 +26,14 @@ const upload = multer({
   }
 });
 
-test.beforeEach.cb(t => {
+test.beforeEach.cb((t) => {
   const app = express();
   app.use(upload.single('input'));
   // use lipo's express middleware
   app.use(lipoExpress);
   // error handler
   app.use(errorHandler());
-  t.context.server = app.listen(function() {
+  t.context.server = app.listen(function () {
     t.context.lipo = lipo({
       baseURI: `http://localhost:${this.address().port}`
     });
@@ -41,7 +41,7 @@ test.beforeEach.cb(t => {
   });
 });
 
-test('metadata', async t => {
+test('metadata', async (t) => {
   const info = await t.context
     .lipo(input)
     // <https://github.com/lovell/sharp/issues/1046>
@@ -52,12 +52,9 @@ test('metadata', async t => {
   t.is(info.height, 100);
 });
 
-test('basic', async t => {
+test('basic', async (t) => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
-  const info = await t.context
-    .lipo(input)
-    .resize(300, 300)
-    .toFile(jpg);
+  const info = await t.context.lipo(input).resize(300, 300).toFile(jpg);
   t.is(info.format, 'jpeg');
   // t.is(info.size, 1498);
   t.is(info.width, 300);
@@ -66,7 +63,7 @@ test('basic', async t => {
   t.is(info.premultiplied, false);
 });
 
-test('basic with options', async t => {
+test('basic with options', async (t) => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
   const info = await t.context
     .lipo({
@@ -87,7 +84,7 @@ test('basic with options', async t => {
   t.is(info.premultiplied, false);
 });
 
-test.cb('basic with callback', t => {
+test.cb('basic with callback', (t) => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
   t.context
     .lipo(input)
@@ -104,13 +101,9 @@ test.cb('basic with callback', t => {
     });
 });
 
-test('convert to png', async t => {
+test('convert to png', async (t) => {
   const png = path.join(os.tmpdir(), `${uuid.v4()}.png`);
-  const info = await t.context
-    .lipo(input)
-    .resize(200, 200)
-    .png()
-    .toFile(png);
+  const info = await t.context.lipo(input).resize(200, 200).png().toFile(png);
   t.is(info.format, 'png');
   // t.is(info.size, 641);
   t.is(info.width, 200);
@@ -119,16 +112,12 @@ test('convert to png', async t => {
   t.is(info.premultiplied, false);
 });
 
-test('buffer', async t => {
-  const data = await t.context
-    .lipo(input)
-    .resize(200, 200)
-    .png()
-    .toBuffer();
+test('buffer', async (t) => {
+  const data = await t.context.lipo(input).resize(200, 200).png().toBuffer();
   t.true(_isBuffer(data));
 });
 
-test('buffer with `options.resolveWithObject`', async t => {
+test('buffer with `options.resolveWithObject`', async (t) => {
   const { data, info } = await t.context
     .lipo(input)
     .resize(200, 200)
@@ -144,7 +133,7 @@ test('buffer with `options.resolveWithObject`', async t => {
   t.is(info.premultiplied, false);
 });
 
-test.cb('buffer with callback', t => {
+test.cb('buffer with callback', (t) => {
   t.context
     .lipo(input)
     .resize(200, 200)
@@ -156,7 +145,7 @@ test.cb('buffer with callback', t => {
     });
 });
 
-test('crop with strategy', async t => {
+test('crop with strategy', async (t) => {
   const jpg = path.join(os.tmpdir(), `${uuid.v4()}.jpg`);
   const info = await t.context
     .lipo(input)

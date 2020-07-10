@@ -84,7 +84,8 @@ class Lipo {
     this.__toFile = universalify.fromPromise(this.__toFile);
     this.__toBuffer = universalify.fromPromise(this.__toBuffer);
 
-    return input => {
+    // eslint-disable-next-line no-constructor-return
+    return (input) => {
       this.__input = input;
       return this;
     };
@@ -124,9 +125,9 @@ class Lipo {
       body.append('options', safeStringify(this.__input));
     body.append('queue', safeStringify(this.__queue));
     this.__queue = [];
-    const res = await this.__api.post('/', { body });
-    if (res.err) throw res.err;
-    return res.body;
+    const response = await this.__api.post('/', { body });
+    if (response.err) throw response.err;
+    return response.body;
   }
 
   async __toFile(fileOut) {
@@ -139,15 +140,15 @@ class Lipo {
       body.append('options', safeStringify(this.__input));
     body.append('queue', safeStringify(this.__queue));
     this.__queue = [];
-    const res = await this.__api.post('/', { body, raw: true });
-    if (res.err) throw res.err;
+    const response = await this.__api.post('/', { body, raw: true });
+    if (response.err) throw response.err;
     this.__info = {
-      format: res.headers.get('x-sharp-format'),
-      size: Number(res.headers.get('x-sharp-size')),
-      width: Number(res.headers.get('x-sharp-width')),
-      height: Number(res.headers.get('x-sharp-height')),
-      channels: Number(res.headers.get('x-sharp-channels')),
-      premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
+      format: response.headers.get('x-sharp-format'),
+      size: Number(response.headers.get('x-sharp-size')),
+      width: Number(response.headers.get('x-sharp-width')),
+      height: Number(response.headers.get('x-sharp-height')),
+      channels: Number(response.headers.get('x-sharp-channels')),
+      premultiplied: boolean(response.headers.get('x-sharp-multiplied'))
     };
     const stream = fs.createWriteStream(fileOut);
     // let timer;
@@ -161,7 +162,7 @@ class Lipo {
       stream.on('error', reject).on('finish', () => {
         resolve(this.__info);
       });
-      res.body.on('error', reject).pipe(stream);
+      response.body.on('error', reject).pipe(stream);
     });
     return promise;
   }
@@ -175,17 +176,17 @@ class Lipo {
       body.append('options', safeStringify(this.__input));
     body.append('queue', safeStringify(this.__queue));
     this.__queue = [];
-    const res = await this.__api.post('/', { body, raw: true });
-    if (res.err) throw res.err;
+    const response = await this.__api.post('/', { body, raw: true });
+    if (response.err) throw response.err;
     this.__info = {
-      format: res.headers.get('x-sharp-format'),
-      size: Number(res.headers.get('x-sharp-size')),
-      width: Number(res.headers.get('x-sharp-width')),
-      height: Number(res.headers.get('x-sharp-height')),
-      channels: Number(res.headers.get('x-sharp-channels')),
-      premultiplied: boolean(res.headers.get('x-sharp-multiplied'))
+      format: response.headers.get('x-sharp-format'),
+      size: Number(response.headers.get('x-sharp-size')),
+      width: Number(response.headers.get('x-sharp-width')),
+      height: Number(response.headers.get('x-sharp-height')),
+      channels: Number(response.headers.get('x-sharp-channels')),
+      premultiplied: boolean(response.headers.get('x-sharp-multiplied'))
     };
-    const data = await res.buffer();
+    const data = await response.buffer();
     if (_isObject(options) && boolean(options.resolveWithObject))
       return { data, info: this.__info };
     return data;
@@ -197,7 +198,7 @@ class Lipo {
 }
 
 for (const key of keys) {
-  Lipo.prototype[key] = function(...args) {
+  Lipo.prototype[key] = function (...args) {
     if (!['toFile', 'toBuffer', 'metadata'].includes(key)) {
       this.__queue.push([key].concat(args));
       return this;
