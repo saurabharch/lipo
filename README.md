@@ -188,7 +188,7 @@ If you are seeking permission to use these trademarks, then please [contact us](
 
 [gulp]: https://gulpjs.com/
 
-[sharp]: http://sharp.dimens.io/
+[sharp]: https://sharp.pixelplumbing.com/
 
 [cabin]: http://cabinjs.com
 
